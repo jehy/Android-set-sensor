@@ -1,5 +1,6 @@
 package com.sma.setsensor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -181,7 +183,7 @@ public class MainActivity extends Activity {
 					new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int id) {
-							MainActivity.this.finish();
+							//MainActivity.this.finish();
 							// User clicked OK button
 							setListener(null);
 						}
@@ -197,25 +199,41 @@ public class MainActivity extends Activity {
 			builder.show();
 		}
 
-		/*
-		 * {"widget": { "debug": "on", "window": { "title":
-		 * "Sample Konfabulator Widget", "name": "main_window", "width": 500,
-		 * "height": 500 }, "image": { "src": "Images/Sun.png", "name": "sun1",
-		 * "hOffset": 250, "vOffset": 250, "alignment": "center" }, "text": {
-		 * "data": "Click Here", "size": 36, "style": "bold", "name": "text1",
-		 * "hOffset": 250, "vOffset": 100, "alignment": "center", "onMouseUp":
-		 * "sun1.opacity = (sun1.opacity / 100) * 90;" } }
-		 */
-
 		EditText c = (EditText) findViewById(R.id.sensor_descr);
 		String descr = c.getText().toString();
 		c = (EditText) findViewById(R.id.sensor_name);
 		String name = c.getText().toString();
-		String t = "{action: add_sensor," + "sensor_id:" + this.sensor_id + ","
-				+ "time:" + String.valueOf(dt.getTime() / 1000) + "," + "name:"
-				+ name + "," + "description" + descr + "," + "long:"
-				+ lastloc.getLongitude() + "," + "lat:" + lastloc.getLatitude()
-				+ "," + "alt:" + lastloc.getAltitude() + "}";
+		String message = "{\"action\": \"add_sensor\"," + "\"sensor_id\":\"" + this.sensor_id + "\","
+				+ "\"time\":\"" + String.valueOf(dt.getTime() / 1000) + "\",\"" + "name\":\""
+				+ name + "\",\"" + "description\": \"" + descr + "\"," + "\"long\":\""
+				+ lastloc.getLongitude() + "\"," + "\"lat\":\"" + lastloc.getLatitude()
+				+ "\"," + "\"alt\":\"" + lastloc.getAltitude() + "\"}";
+
+		String phone="+79167964985";
+		//SmsManager smsManager = SmsManager.getDefault();
+		Log.v("Thread service", "Sending sms to " + phone);
+		Log.v("Thread service", "SMS text:  " + message);
+		//smsManager.sendTextMessage(phone, null, message, null, null);
+
+		SmsManager sms = SmsManager.getDefault();
+		ArrayList<String> parts = sms.divideMessage(message);
+		sms.sendMultipartTextMessage(phone, null, parts, null, null);
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				MainActivity.this);
+		// Add the buttons
+		builder.setMessage("Сообщение о датчике отправлено!").setTitle(
+				"Статус");
+		builder.setPositiveButton("Ок",
+				new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int id) {
+						// MainActivity.this.finish();
+						// User clicked OK button
+					}
+				});
+		builder.show();
+		return;
 	}
 
 }
