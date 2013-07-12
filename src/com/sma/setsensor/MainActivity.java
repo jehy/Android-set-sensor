@@ -46,6 +46,20 @@ public class MainActivity extends Activity {
 		setListener(null);
 	}
 
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		lm.removeUpdates(locationListener);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		setListener(null);
+	}
+
 	public void setListener(View view) {
 
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMillis,
