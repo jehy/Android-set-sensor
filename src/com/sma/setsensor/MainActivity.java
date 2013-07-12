@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
@@ -22,14 +23,17 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	int sensor_id = 1;
+	private static final String PREFS_NAME = "SETSENSOR";
+	int sensor_id = 0;
+	int retr_id = 0;
+	int host_id = 1;
 
 	private static long minTimeMillis = 2000;
 	private static long minDistanceMeters = 10;
-	private static float minAccuracyMeters = 35;
+	// private static float minAccuracyMeters = 35;
 	private int lastStatus = 0;
 	private static boolean showingDebugToast = false;
-	private static boolean showingRecToast = false;
+	// private static boolean showingRecToast = false;
 
 	private LocationManager lm;
 	private LocationListener locationListener;
@@ -58,6 +62,7 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		setListener(null);
+		load_ids();
 	}
 
 	public void setListener(View view) {
@@ -73,19 +78,76 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	public void increment_id(View view) {
+	public void increment_sid(View view) {
 		sensor_id++;
-		String f = "ID " + String.valueOf(sensor_id);
+		String f = "SID " + String.valueOf(sensor_id);
 		TextView c = (TextView) findViewById(R.id.sensor_id);
 		c.setText(f);
 	}
 
-	public void decrement_id(View view) {
+	public void load_ids() {
+
+		SharedPreferences settings = getApplicationContext()
+				.getSharedPreferences(PREFS_NAME, 0);
+		sensor_id = settings.getInt("sensor_id", 0);
+		((TextView) findViewById(R.id.sensor_id)).setText("SID "+String
+				.valueOf(sensor_id));
+		host_id = settings.getInt("host_id", 1);
+		((TextView) findViewById(R.id.host_id))
+				.setText("HID "+String.valueOf(host_id));
+		retr_id = settings.getInt("retr_id", 0);
+		((TextView) findViewById(R.id.retr_id))
+				.setText("RID "+String.valueOf(retr_id));
+	}
+
+	public void save_ids() {
+		SharedPreferences settings = getApplicationContext()
+				.getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("sensor_id", sensor_id);
+		editor.putInt("host_id", host_id);
+		editor.putInt("retr_id", retr_id);
+		editor.commit();
+	}
+
+	public void decrement_sid(View view) {
 		if (sensor_id == 0)
 			return;
 		sensor_id--;
-		String f = "ID " + String.valueOf(sensor_id);
+		String f = "SID " + String.valueOf(sensor_id);
 		TextView c = (TextView) findViewById(R.id.sensor_id);
+		c.setText(f);
+	}
+
+	public void increment_hid(View view) {
+		host_id++;
+		String f = "HID " + String.valueOf(host_id);
+		TextView c = (TextView) findViewById(R.id.host_id);
+		c.setText(f);
+	}
+
+	public void decrement_hid(View view) {
+		if (host_id == 0)
+			return;
+		host_id--;
+		String f = "HID " + String.valueOf(host_id);
+		TextView c = (TextView) findViewById(R.id.host_id);
+		c.setText(f);
+	}
+
+	public void increment_rid(View view) {
+		retr_id++;
+		String f = "RID " + String.valueOf(retr_id);
+		TextView c = (TextView) findViewById(R.id.retr_id);
+		c.setText(f);
+	}
+
+	public void decrement_rid(View view) {
+		if (retr_id == 0)
+			return;
+		retr_id--;
+		String f = "RID " + String.valueOf(retr_id);
+		TextView c = (TextView) findViewById(R.id.retr_id);
 		c.setText(f);
 	}
 
@@ -197,7 +259,7 @@ public class MainActivity extends Activity {
 					new DialogInterface.OnClickListener() {
 
 						public void onClick(DialogInterface dialog, int id) {
-							//MainActivity.this.finish();
+							// MainActivity.this.finish();
 							// User clicked OK button
 							setListener(null);
 						}
@@ -213,39 +275,41 @@ public class MainActivity extends Activity {
 			builder.show();
 		}
 
-		EditText c = (EditText) findViewById(R.id.sensor_descr);
-		String descr = c.getText().toString();
-		c = (EditText) findViewById(R.id.sensor_name);
-		String name = c.getText().toString();
-		String message = "{\"action\": \"add_sensor\"," + "\"sensor_id\":\"" + this.sensor_id + "\","
-				+ "\"time\":\"" + String.valueOf(dt.getTime() / 1000) + "\",\"" + "name\":\""
-				+ name + "\",\"" + "description\": \"" + descr + "\"," + "\"long\":\""
-				+ lastloc.getLongitude() + "\"," + "\"lat\":\"" + lastloc.getLatitude()
-				+ "\"," + "\"alt\":\"" + lastloc.getAltitude() + "\"}";
+		// EditText c = (EditText) findViewById(R.id.sensor_descr);
+		// String descr = c.getText().toString();
+		// c = (EditText) findViewById(R.id.sensor_name);
+		// String name = c.getText().toString();
+		String message = "{\"action\": \"add_sensor\"," + "\"sensor_id\":\""
+				+ this.sensor_id + "\"," + "\"retr_id\":\"" + this.retr_id
+				+ "\"," + "\"host_id\":\"" + this.host_id + "\","
+				+ "\"time\":\"" + String.valueOf(dt.getTime() / 1000)+ "\","+
+				//+
+				// + name + "\",\"" + "description\": \"" + descr + "\"," +
+				"\"long\":\"" + lastloc.getLongitude() + "\"," + "\"lat\":\""
+				+ lastloc.getLatitude() + "\"," + "\"alt\":\""
+				+ lastloc.getAltitude() + "\"}";
 
-		String phone="+79167964985";
-		//SmsManager smsManager = SmsManager.getDefault();
+		String phone = "+79167964985";
+		// SmsManager smsManager = SmsManager.getDefault();
 		Log.v("Thread service", "Sending sms to " + phone);
 		Log.v("Thread service", "SMS text:  " + message);
-		//smsManager.sendTextMessage(phone, null, message, null, null);
+		// smsManager.sendTextMessage(phone, null, message, null, null);
 
 		SmsManager sms = SmsManager.getDefault();
 		ArrayList<String> parts = sms.divideMessage(message);
 		sms.sendMultipartTextMessage(phone, null, parts, null, null);
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(
-				MainActivity.this);
+		save_ids();
+		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 		// Add the buttons
-		builder.setMessage("Сообщение о датчике отправлено!").setTitle(
-				"Статус");
-		builder.setPositiveButton("Ок",
-				new DialogInterface.OnClickListener() {
+		builder.setMessage("Сообщение о датчике отправлено!")
+				.setTitle("Статус");
+		builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
 
-					public void onClick(DialogInterface dialog, int id) {
-						// MainActivity.this.finish();
-						// User clicked OK button
-					}
-				});
+			public void onClick(DialogInterface dialog, int id) {
+				// MainActivity.this.finish();
+				// User clicked OK button
+			}
+		});
 		builder.show();
 		return;
 	}
