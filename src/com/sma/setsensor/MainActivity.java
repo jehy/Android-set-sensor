@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
 	int sensor_id = 0;
 	int retr_id = 0;
 	int host_id = 1;
+	String phone = "+79037162494";//nagios
 
 	private static long minTimeMillis = 2000;
 	private static long minDistanceMeters = 10;
@@ -291,7 +292,6 @@ public class MainActivity extends Activity {
 				+ lastloc.getLatitude() + "\"," + "\"alt\":\""
 				+ lastloc.getAltitude() + "\"}";
 
-		String phone = "+79167964985";
 		// SmsManager smsManager = SmsManager.getDefault();
 		Log.v("Thread service", "Sending sms to " + phone);
 		Log.v("Thread service", "SMS text:  " + message);
