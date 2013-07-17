@@ -18,11 +18,12 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity  implements NumberPicker.OnValueChangeListener{
 
 	private static final String PREFS_NAME = "SETSENSOR";
 	int sensor_id = 0;
@@ -51,8 +52,54 @@ public class MainActivity extends Activity {
 
 		locationListener = new MyLocationListener();
 		setListener(null);
+
+		NumberPicker np = (NumberPicker) findViewById(R.id.host_picker);
+		np.setMaxValue(100);
+		np.setMinValue(0);
+		np.setOnValueChangedListener(this);
+		/*{
+
+		        @Override
+		        public void onClick(View v) {
+		            change_host(v);
+		        }
+		    });*/
+
+		NumberPicker np2 = (NumberPicker) findViewById(R.id.retr_picker);
+		np2.setMaxValue(100);
+		np2.setMinValue(0);
+		np2.setOnValueChangedListener(this);
+		/*   np2.setOnClickListener(new View.OnClickListener() {
+
+		        @Override
+		        public void onClick(View v) {
+		            change_retr(v);
+		        }
+		    });*/
+
+		NumberPicker np3 = (NumberPicker) findViewById(R.id.sensor_picker);
+		np3.setMaxValue(100);
+		np3.setMinValue(0);
+		np3.setOnValueChangedListener(this);
+		/*   np3.setOnClickListener(new View.OnClickListener() {
+
+		        @Override
+		        public void onClick(View v) {
+		            change_sensor(v);
+		        }
+		    });*/
 	}
 
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+    	if(picker.getId()==R.id.host_picker)
+    		host_id=newVal;
+    	if(picker.getId()==R.id.sensor_picker)
+    		sensor_id=newVal;
+    	if(picker.getId()==R.id.retr_picker)
+    		retr_id=newVal;
+        //Toast.makeText(this, "change", Toast.LENGTH_SHORT).show();
+    }
+    
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -80,27 +127,43 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+/*
+	public void change_host(View view) 
+	{
+		NumberPicker np = (NumberPicker) findViewById(R.id.host_picker);
+		host_id=np.getValue();
+	}
 
+	public void change_retr(View view) 
+	{
+		NumberPicker np = (NumberPicker) findViewById(R.id.retr_picker);
+		retr_id=np.getValue();
+	}
+	
+
+	public void change_sensor(View view) 
+	{
+		NumberPicker np = (NumberPicker) findViewById(R.id.sensor_picker);
+		sensor_id=np.getValue();
+	}*/
+	/*
 	public void increment_sid(View view) {
 		sensor_id++;
 		String f = "SID " + String.valueOf(sensor_id);
 		TextView c = (TextView) findViewById(R.id.sensor_id);
 		c.setText(f);
 	}
-
+*/
 	public void load_ids() {
 
 		SharedPreferences settings = getApplicationContext()
 				.getSharedPreferences(PREFS_NAME, 0);
 		sensor_id = settings.getInt("sensor_id", 0);
-		((TextView) findViewById(R.id.sensor_id)).setText("SID "+String
-				.valueOf(sensor_id));
+		((NumberPicker) findViewById(R.id.sensor_picker)).setValue(sensor_id);
 		host_id = settings.getInt("host_id", 1);
-		((TextView) findViewById(R.id.host_id))
-				.setText("HID "+String.valueOf(host_id));
+		((NumberPicker) findViewById(R.id.host_picker)).setValue(host_id);
 		retr_id = settings.getInt("retr_id", 0);
-		((TextView) findViewById(R.id.retr_id))
-				.setText("RID "+String.valueOf(retr_id));
+		((NumberPicker) findViewById(R.id.retr_picker)).setValue(retr_id);
 	}
 
 	public void save_ids() {
@@ -112,7 +175,7 @@ public class MainActivity extends Activity {
 		editor.putInt("retr_id", retr_id);
 		editor.commit();
 	}
-
+/*
 	public void decrement_sid(View view) {
 		if (sensor_id == 0)
 			return;
@@ -152,7 +215,7 @@ public class MainActivity extends Activity {
 		String f = "RID " + String.valueOf(retr_id);
 		TextView c = (TextView) findViewById(R.id.retr_id);
 		c.setText(f);
-	}
+	}*/
 
 	public class MyLocationListener implements LocationListener {
 
