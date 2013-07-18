@@ -351,9 +351,9 @@ public class MainActivity extends Activity  implements NumberPicker.OnValueChang
 				+ "\"time\":\"" + String.valueOf(dt.getTime() / 1000)+ "\","+
 				//+
 				// + name + "\",\"" + "description\": \"" + descr + "\"," +
-				"\"long\":\"" + String.format("%.5f",lastloc.getLongitude()) + "\"," + "\"lat\":\""
-				+ String.format("%.5f", lastloc.getLatitude()) + "\"," + "\"alt\":\""
-				+ String.format("%.5f",lastloc.getAltitude()) + "\"}";
+				"\"long\":\"" + String.format("%.5f",lastloc.getLongitude()).replaceAll("[.0]+$", "") + "\"," + "\"lat\":\""
+				+ String.format("%.5f", lastloc.getLatitude()).replaceAll("[.0]+$", "") + "\"," + "\"alt\":\""
+				+ String.format("%.5f",lastloc.getAltitude()).replaceAll("[.0]+$", "") + "\"}";
 
 		// SmsManager smsManager = SmsManager.getDefault();
 		Log.v("Thread service", "Sending sms to " + phone);
